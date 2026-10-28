@@ -1,0 +1,10 @@
+{
+    "recommendations": [
+        "anysphere.cpptools",
+        "vadimcn.vscode-lldb"
+    ],
+    "unwantedRecommendations": [
+        "ms-vscode.cpptools",
+        "ms-vscode.cpptools-extension-pack"
+    ]
+}

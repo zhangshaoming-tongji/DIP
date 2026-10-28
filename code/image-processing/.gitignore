@@ -1,0 +1,12 @@
+# Visual Studio cache
+.vs/
+
+# Build outputs
+bin/
+build/
+*.o
+*.obj
+*.exe
+*.ilk
+*.pdb
+*.dll

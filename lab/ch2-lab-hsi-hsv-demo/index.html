@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HSI / HSV 色彩空间演示 · 狒狒</title>
+  <style>
+    :root {
+      --bg: #0b1220;
+      --card: #121a2b;
+      --line: #243049;
+      --text: #e8eef6;
+      --muted: #93a0b5;
+      --navy: #7eb6e8;
+      --hsi: #5ec8c5;
+      --hsv: #f0a36b;
+      --red: #e05a5a;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: var(--bg); color: var(--text); font-family: "Microsoft YaHei", "Segoe UI", sans-serif; }
+    body { min-height: 100vh; }
+    header {
+      display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
+      padding: 16px 22px 10px; border-bottom: 1px solid var(--line);
+    }
+    h1 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: 0.02em; }
+    header p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+    .wrap { display: grid; grid-template-columns: 1fr 320px; gap: 16px; padding: 16px 22px 24px; }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
+    .images { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .shot { display: flex; flex-direction: column; gap: 8px; }
+    .shot h3 { margin: 0; font-size: 14px; font-weight: 650; color: var(--muted); }
+    .shot h3 b { color: var(--text); font-weight: 700; }
+    .shot.hsi h3 b { color: var(--hsi); }
+    .shot.hsv h3 h3, .shot.hsv h3 b { color: var(--hsv); }
+    canvas {
+      width: 100%; height: auto; border-radius: 8px; background: #000; cursor: crosshair;
+      display: block; image-rendering: auto;
+    }
+    .channels { display: grid; grid-template-columns: 120px 1fr 1fr 1fr; gap: 10px; margin-top: 12px; align-items: start; }
+    .tabs { display: flex; flex-direction: column; gap: 8px; }
+    .tab {
+      border: 1px solid var(--line); background: transparent; color: var(--text);
+      border-radius: 8px; padding: 8px 10px; cursor: pointer; text-align: left;
+    }
+    .tab.active.hsi { background: #143836; border-color: var(--hsi); color: var(--hsi); }
+    .tab.active.hsv { background: #3a2616; border-color: var(--hsv); color: var(--hsv); }
+    .ch h4 { margin: 0 0 6px; font-size: 12px; color: var(--muted); font-weight: 600; }
+    .controls { display: flex; flex-direction: column; gap: 12px; }
+    .ctrl label { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
+    .ctrl input[type="range"] { width: 100%; accent-color: var(--navy); }
+    .hue-bar {
+      height: 8px; border-radius: 99px; margin-bottom: 6px;
+      background: linear-gradient(90deg, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00);
+    }
+    .presets { display: flex; flex-wrap: wrap; gap: 6px; }
+    .presets button, .reset {
+      border: 1px solid var(--line); background: #182338; color: var(--text);
+      border-radius: 8px; padding: 6px 10px; cursor: pointer; font-size: 12px;
+    }
+    .reset { background: #3a1d24; border-color: #6b2c36; color: #ffc9c9; }
+    .formula { font-size: 12px; line-height: 1.55; color: var(--muted); }
+    .formula b { color: var(--text); }
+    .formula .hsi { color: var(--hsi); }
+    .formula .hsv { color: var(--hsv); }
+    .probe {
+      font-family: Consolas, "Cascadia Mono", monospace; font-size: 12px;
+      background: #0d1422; border-radius: 8px; padding: 10px; line-height: 1.6;
+      min-height: 132px; color: #c9d6e8;
+    }
+    .swatch { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; border: 1px solid #fff3; }
+    .note { font-size: 12px; color: var(--muted); }
+    @media (max-width: 1100px) {
+      .wrap { grid-template-columns: 1fr; }
+      .images { grid-template-columns: 1fr; }
+      .channels { grid-template-columns: 1fr 1fr 1fr; }
+      .tabs { flex-direction: row; grid-column: 1 / -1; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>HSI / HSV 色彩空间交互演示</h1>
+      <p>以狒狒图为例：同一组参数分别作用在两种模型上。点击图像可查看该像素的 RGB 与分量。</p>
+    </div>
+    <button class="reset" id="resetBtn" type="button">恢复原图</button>
+  </header>
+
+  <div class="wrap">
+    <div>
+      <div class="images">
+        <div class="shot">
+          <h3><b>原图</b> RGB</h3>
+          <canvas id="cvOrig"></canvas>
+        </div>
+        <div class="shot hsi">
+          <h3><b>HSI 结果</b> 调 H / S / I</h3>
+          <canvas id="cvHsi"></canvas>
+        </div>
+        <div class="shot hsv">
+          <h3><b>HSV 结果</b> 调 H / S / V</h3>
+          <canvas id="cvHsv"></canvas>
+        </div>
+      </div>
+
+      <div class="card channels">
+        <div class="tabs">
+          <button class="tab active hsi" id="tabHsi" type="button">看 HSI 通道</button>
+          <button class="tab hsv" id="tabHsv" type="button">看 HSV 通道</button>
+          <p class="note">色相画成彩色；饱和度、强度/明度画成灰度。</p>
+        </div>
+        <div class="ch"><h4 id="hLabel">H 色相</h4><canvas id="cvH"></canvas></div>
+        <div class="ch"><h4 id="sLabel">S 饱和度</h4><canvas id="cvS"></canvas></div>
+        <div class="ch"><h4 id="ivLabel">I 强度</h4><canvas id="cvIV"></canvas></div>
+      </div>
+    </div>
+
+    <aside class="card controls">
+      <div class="ctrl">
+        <label>色相旋转 ΔH <span id="hVal">0°</span></label>
+        <div class="hue-bar"></div>
+        <input id="hSlider" type="range" min="-180" max="180" value="0" />
+      </div>
+      <div class="ctrl">
+        <label>饱和度 ×S <span id="sVal">100%</span></label>
+        <input id="sSlider" type="range" min="0" max="200" value="100" />
+      </div>
+      <div class="ctrl">
+        <label>亮度 ×I / ×V <span id="vVal">100%</span></label>
+        <input id="vSlider" type="range" min="0" max="200" value="100" />
+      </div>
+      <div class="presets">
+        <button type="button" data-preset="reset">原图</button>
+        <button type="button" data-preset="hue120">色相 +120°</button>
+        <button type="button" data-preset="hue180">互补色</button>
+        <button type="button" data-preset="gray">去饱和</button>
+        <button type="button" data-preset="vivid">过饱和</button>
+        <button type="button" data-preset="dark">压暗</button>
+        <button type="button" data-preset="bright">提亮</button>
+      </div>
+      <div class="formula">
+        <p><b class="hsi">HSI</b>（Gonzalez，课本常用）<br>
+          I = (R+G+B)/3<br>
+          S = 1 − 3 min(R,G,B)/(R+G+B)<br>
+          H 由 R、G、B 相对大小决定，范围 [0, 360°)
+        </p>
+        <p><b class="hsv">HSV</b>（圆锥模型，界面常用）<br>
+          V = max(R,G,B)<br>
+          S = (V − min)/V<br>
+          H 按最大通道所在扇区计算
+        </p>
+        <p>同一只狒狒：蓝脸、红鼻对 <b>I</b> 与 <b>V</b> 的响应不同。I 是三通道平均，V 只看最亮通道。</p>
+      </div>
+      <div class="probe" id="probe">点击图像查看像素分量</div>
+    </aside>
+  </div>
+
+  <script src="baboon-data.js"></script>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const canvases = {
+      orig: $("cvOrig"),
+      hsi: $("cvHsi"),
+      hsv: $("cvHsv"),
+      h: $("cvH"),
+      s: $("cvS"),
+      iv: $("cvIV"),
+    };
+    const ctxs = Object.fromEntries(
+      Object.entries(canvases).map(([k, cv]) => [k, cv.getContext("2d", { willReadFrequently: true })])
+    );
+
+    const state = {
+      w: 0,
+      h: 0,
+      rgb: null,
+      channelSpace: "hsi",
+      dH: 0,
+      sMul: 1,
+      vMul: 1,
+      pending: false,
+    };
+
+    function clamp01(x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
+    function wrapHue(h) { return ((h % 360) + 360) % 360; }
+    function deg(rad) { return rad * 180 / Math.PI; }
+    function rad(d) { return d * Math.PI / 180; }
+
+    function rgbToHsv(r, g, b) {
+      const max = Math.max(r, g, b);
+      const min = Math.min(r, g, b);
+      const d = max - min;
+      let h = 0;
+      if (d > 1e-8) {
+        if (max === r) h = 60 * (((g - b) / d) % 6);
+        else if (max === g) h = 60 * ((b - r) / d + 2);
+        else h = 60 * ((r - g) / d + 4);
+      }
+      if (h < 0) h += 360;
+      const s = max < 1e-8 ? 0 : d / max;
+      return [h, s, max];
+    }
+
+    function hsvToRgb(h, s, v) {
+      h = wrapHue(h);
+      const c = v * s;
+      const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+      const m = v - c;
+      let r = 0, g = 0, b = 0;
+      if (h < 60) [r, g, b] = [c, x, 0];
+      else if (h < 120) [r, g, b] = [x, c, 0];
+      else if (h < 180) [r, g, b] = [0, c, x];
+      else if (h < 240) [r, g, b] = [0, x, c];
+      else if (h < 300) [r, g, b] = [x, 0, c];
+      else [r, g, b] = [c, 0, x];
+      return [clamp01(r + m), clamp01(g + m), clamp01(b + m)];
+    }
+
+    function rgbToHsi(r, g, b) {
+      const sum = r + g + b;
+      const i = sum / 3;
+      if (sum < 1e-8) return [0, 0, 0];
+      const s = 1 - (3 * Math.min(r, g, b)) / sum;
+      const num = 0.5 * ((r - g) + (r - b));
+      const den = Math.sqrt((r - g) * (r - g) + (r - b) * (g - b));
+      let h = 0;
+      if (den > 1e-8) {
+        const theta = Math.acos(Math.min(1, Math.max(-1, num / den)));
+        h = b <= g ? deg(theta) : 360 - deg(theta);
+      }
+      return [h, clamp01(s), clamp01(i)];
+    }
+
+    function hsiToRgb(h, s, i) {
+      h = wrapHue(h);
+      s = clamp01(s);
+      i = clamp01(i);
+      let r, g, b;
+      if (h < 120) {
+        b = i * (1 - s);
+        r = i * (1 + (s * Math.cos(rad(h))) / Math.cos(rad(60 - h)));
+        g = 3 * i - (r + b);
+      } else if (h < 240) {
+        const hh = h - 120;
+        r = i * (1 - s);
+        g = i * (1 + (s * Math.cos(rad(hh))) / Math.cos(rad(60 - hh)));
+        b = 3 * i - (r + g);
+      } else {
+        const hh = h - 240;
+        g = i * (1 - s);
+        b = i * (1 + (s * Math.cos(rad(hh))) / Math.cos(rad(60 - hh)));
+        r = 3 * i - (g + b);
+      }
+      return [clamp01(r), clamp01(g), clamp01(b)];
+    }
+
+    function sizeCanvases(w, h) {
+      for (const cv of Object.values(canvases)) {
+        cv.width = w;
+        cv.height = h;
+      }
+    }
+
+    function putRgb(ctx, rgb) {
+      const img = ctx.createImageData(state.w, state.h);
+      img.data.set(rgb);
+      ctx.putImageData(img, 0, 0);
+    }
+
+    function adjustAndDraw() {
+      const { w, h, rgb, dH, sMul, vMul, channelSpace } = state;
+      const n = w * h;
+      const hsiOut = new Uint8ClampedArray(n * 4);
+      const hsvOut = new Uint8ClampedArray(n * 4);
+      const chH = new Uint8ClampedArray(n * 4);
+      const chS = new Uint8ClampedArray(n * 4);
+      const chIV = new Uint8ClampedArray(n * 4);
+
+      for (let i = 0, p = 0; i < n; i++, p += 4) {
+        const r = rgb[p] / 255, g = rgb[p + 1] / 255, b = rgb[p + 2] / 255;
+
+        let [hh, sh, ih] = rgbToHsi(r, g, b);
+        hh = wrapHue(hh + dH);
+        sh = clamp01(sh * sMul);
+        ih = clamp01(ih * vMul);
+        const [rH, gH, bH] = hsiToRgb(hh, sh, ih);
+        hsiOut[p] = rH * 255; hsiOut[p + 1] = gH * 255; hsiOut[p + 2] = bH * 255; hsiOut[p + 3] = 255;
+
+        let [hv, sv, vv] = rgbToHsv(r, g, b);
+        hv = wrapHue(hv + dH);
+        sv = clamp01(sv * sMul);
+        vv = clamp01(vv * vMul);
+        const [rV, gV, bV] = hsvToRgb(hv, sv, vv);
+        hsvOut[p] = rV * 255; hsvOut[p + 1] = gV * 255; hsvOut[p + 2] = bV * 255; hsvOut[p + 3] = 255;
+
+        const useHsi = channelSpace === "hsi";
+        const hue = useHsi ? hh : hv;
+        const sat = useHsi ? sh : sv;
+        const val = useHsi ? ih : vv;
+        const [hr, hg, hb] = useHsi ? hsiToRgb(hue, 1, 0.5) : hsvToRgb(hue, 1, 1);
+        chH[p] = hr * 255; chH[p + 1] = hg * 255; chH[p + 2] = hb * 255; chH[p + 3] = 255;
+        const sg = sat * 255;
+        chS[p] = sg; chS[p + 1] = sg; chS[p + 2] = sg; chS[p + 3] = 255;
+        const vg = val * 255;
+        chIV[p] = vg; chIV[p + 1] = vg; chIV[p + 2] = vg; chIV[p + 3] = 255;
+      }
+
+      putRgb(ctxs.hsi, hsiOut);
+      putRgb(ctxs.hsv, hsvOut);
+      putRgb(ctxs.h, chH);
+      putRgb(ctxs.s, chS);
+      putRgb(ctxs.iv, chIV);
+      state.hsiOut = hsiOut;
+      state.hsvOut = hsvOut;
+    }
+
+    function scheduleDraw() {
+      if (state.pending) return;
+      state.pending = true;
+      requestAnimationFrame(() => {
+        state.pending = false;
+        adjustAndDraw();
+      });
+    }
+
+    function setSliders(dH, sPct, vPct) {
+      $("hSlider").value = dH;
+      $("sSlider").value = sPct;
+      $("vSlider").value = vPct;
+      syncLabels();
+      scheduleDraw();
+    }
+
+    function syncLabels() {
+      state.dH = Number($("hSlider").value);
+      state.sMul = Number($("sSlider").value) / 100;
+      state.vMul = Number($("vSlider").value) / 100;
+      $("hVal").textContent = state.dH + "°";
+      $("sVal").textContent = Math.round(state.sMul * 100) + "%";
+      $("vVal").textContent = Math.round(state.vMul * 100) + "%";
+    }
+
+    function setChannelSpace(space) {
+      state.channelSpace = space;
+      $("tabHsi").classList.toggle("active", space === "hsi");
+      $("tabHsv").classList.toggle("active", space === "hsv");
+      $("hLabel").textContent = space === "hsi" ? "HSI · H 色相" : "HSV · H 色相";
+      $("sLabel").textContent = space === "hsi" ? "HSI · S 饱和度" : "HSV · S 饱和度";
+      $("ivLabel").textContent = space === "hsi" ? "HSI · I 强度" : "HSV · V 明度";
+      scheduleDraw();
+    }
+
+    function pixelAt(src, x, y) {
+      const p = (y * state.w + x) * 4;
+      return [src[p], src[p + 1], src[p + 2]];
+    }
+
+    function showProbe(x, y) {
+      const [r, g, b] = pixelAt(state.rgb, x, y);
+      const rn = r / 255, gn = g / 255, bn = b / 255;
+      const [hh, sh, ih] = rgbToHsi(rn, gn, bn);
+      const [hv, sv, vv] = rgbToHsv(rn, gn, bn);
+      const [rH, gH, bH] = state.hsiOut ? pixelAt(state.hsiOut, x, y) : [r, g, b];
+      const [rV, gV, bV] = state.hsvOut ? pixelAt(state.hsvOut, x, y) : [r, g, b];
+      $("probe").innerHTML =
+        `像素 (${x}, ${y})<br>` +
+        `<span class="swatch" style="background:rgb(${r},${g},${b})"></span>原图 RGB (${r}, ${g}, ${b})<br>` +
+        `HSI  H=${hh.toFixed(1)}°  S=${sh.toFixed(3)}  I=${ih.toFixed(3)}<br>` +
+        `HSV  H=${hv.toFixed(1)}°  S=${sv.toFixed(3)}  V=${vv.toFixed(3)}<br>` +
+        `<span class="swatch" style="background:rgb(${rH},${gH},${bH})"></span>HSI后 RGB (${rH}, ${gH}, ${bH})　` +
+        `<span class="swatch" style="background:rgb(${rV},${gV},${bV})"></span>HSV后 RGB (${rV}, ${gV}, ${bV})`;
+    }
+
+    function bindProbe(canvas) {
+      canvas.addEventListener("click", (ev) => {
+        const rect = canvas.getBoundingClientRect();
+        const x = Math.min(state.w - 1, Math.max(0, Math.floor((ev.clientX - rect.left) / rect.width * state.w)));
+        const y = Math.min(state.h - 1, Math.max(0, Math.floor((ev.clientY - rect.top) / rect.height * state.h)));
+        showProbe(x, y);
+      });
+    }
+
+    function loadImage(src) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = src;
+      });
+    }
+
+    async function boot() {
+      const src = (typeof BABOON_DATA_URL === "string" && BABOON_DATA_URL)
+        ? BABOON_DATA_URL
+        : "baboon.png";
+      const img = await loadImage(src);
+      state.w = img.naturalWidth;
+      state.h = img.naturalHeight;
+      sizeCanvases(state.w, state.h);
+      ctxs.orig.drawImage(img, 0, 0);
+      state.rgb = ctxs.orig.getImageData(0, 0, state.w, state.h).data;
+      Object.values(canvases).forEach(bindProbe);
+      setChannelSpace("hsi");
+      scheduleDraw();
+    }
+
+    ["hSlider", "sSlider", "vSlider"].forEach((id) => {
+      $(id).addEventListener("input", () => { syncLabels(); scheduleDraw(); });
+    });
+    $("tabHsi").addEventListener("click", () => setChannelSpace("hsi"));
+    $("tabHsv").addEventListener("click", () => setChannelSpace("hsv"));
+    $("resetBtn").addEventListener("click", () => setSliders(0, 100, 100));
+
+    const presets = {
+      reset: [0, 100, 100],
+      hue120: [120, 100, 100],
+      hue180: [180, 100, 100],
+      gray: [0, 0, 100],
+      vivid: [0, 170, 100],
+      dark: [0, 100, 55],
+      bright: [0, 100, 145],
+    };
+    document.querySelectorAll("[data-preset]").forEach((btn) => {
+      btn.addEventListener("click", () => setSliders(...presets[btn.dataset.preset]));
+    });
+
+    boot().catch((err) => {
+      $("probe").textContent = "狒狒图加载失败：请用本地服务器打开本页，或确认 baboon-data.js / baboon.png 同目录。";
+      console.error(err);
+    });
+  </script>
+</body>
+</html>

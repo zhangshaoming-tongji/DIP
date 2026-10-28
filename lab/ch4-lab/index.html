@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>第4章 图像滤波 · 课堂演示</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <div>
+      <p class="kicker">数字图像处理 · 第4章 · 课堂互动</p>
+      <h1>最大最小、均值、高斯、可分离卷积、双边、联合双边与引导滤波</h1>
+    </div>
+    <div class="source-bar">
+      <label>演示图像
+        <select id="sourceSelect">
+          <option value="lena">Lena</option>
+          <option value="edge">阶跃与圆</option>
+          <option value="mask">硬掩模</option>
+          <option value="file">本地图片</option>
+        </select>
+      </label>
+      <label>噪声
+        <select id="noiseSelect">
+          <option value="none">无</option>
+          <option value="pepper" selected>椒噪声（黑点）</option>
+          <option value="salt">盐噪声（白点）</option>
+          <option value="sp">椒盐噪声</option>
+          <option value="gauss">高斯噪声</option>
+        </select>
+      </label>
+      <button type="button" id="openBtn">打开本地图片</button>
+      <input id="fileInput" type="file" accept="image/*" hidden />
+    </div>
+  </header>
+
+  <nav id="filters" class="demos"></nav>
+
+  <main>
+    <section class="stage">
+      <figure>
+        <figcaption id="srcCaption">输入（含噪声） · 点击查看该点邻域</figcaption>
+        <canvas id="srcCanvas"></canvas>
+      </figure>
+      <figure>
+        <figcaption id="dstCaption">输出</figcaption>
+        <canvas id="dstCanvas"></canvas>
+      </figure>
+      <figure>
+        <figcaption id="auxCaption">邻域</figcaption>
+        <canvas id="auxCanvas" width="360" height="280"></canvas>
+        <p id="formula" class="formula"></p>
+        <p id="note" class="note"></p>
+      </figure>
+    </section>
+    <aside>
+      <h2 id="filterTitle"></h2>
+      <div id="fields"></div>
+      <div id="presets" class="presets"></div>
+      <div id="sepBox" hidden></div>
+      <p id="stats" class="stats"></p>
+    </aside>
+  </main>
+
+  <script src="filters.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

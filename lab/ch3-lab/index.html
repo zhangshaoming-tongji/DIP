@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>第3章 灰度变换与几何变换 · 课堂演示</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <div>
+      <p class="kicker">数字图像处理 · 第3章 · 课堂互动</p>
+      <h1>灰度变换与几何变换</h1>
+    </div>
+    <div class="source-bar">
+      <label>演示图像
+        <select id="sourceSelect">
+          <option value="lena">Lena</option>
+          <option value="low">Lena · 低对比度</option>
+          <option value="ramp">灰度渐变</option>
+        </select>
+      </label>
+      <button type="button" id="openBtn">打开本地图片</button>
+      <input id="fileInput" type="file" accept="image/*" hidden />
+    </div>
+  </header>
+
+  <nav id="groups" class="groups"></nav>
+  <nav id="demos" class="demos"></nav>
+
+  <main>
+    <section class="stage">
+      <figure>
+        <figcaption>输入</figcaption>
+        <canvas id="srcCanvas"></canvas>
+      </figure>
+      <figure>
+        <figcaption>输出</figcaption>
+        <canvas id="dstCanvas"></canvas>
+      </figure>
+      <figure class="panel-fig">
+        <figcaption id="auxCaption">映射曲线</figcaption>
+        <canvas id="auxCanvas" width="360" height="280"></canvas>
+        <pre id="matrixBox" class="matrix" hidden></pre>
+        <p id="formula" class="formula"></p>
+        <p id="note" class="note"></p>
+      </figure>
+    </section>
+    <aside id="controls"></aside>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

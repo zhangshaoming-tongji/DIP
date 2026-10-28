@@ -1,0 +1,28 @@
+# Microsoft Office 临时锁文件
+~$*
+
+# Python
+__pycache__/
+*.py[cod]
+
+# 系统文件与网盘同步临时文件
+Thumbs.db
+Desktop.ini
+.DS_Store
+*.baiduyun.uploading.cfg
+*.baiduyun.downloading.cfg
+
+# 密钥
+.env
+.env.*
+*.pem
+credentials.json
+
+# 未采用的旧稿，只留在本机
+nogood/
+
+# WinLibs 工具链自行解压到这里，不入库。见 code/lib-3rdparties/README.md
+code/lib-3rdparties/mingw-winlibs-16/
+
+# LGPL 的 FFmpeg 插件，课堂程序不用。见 code/lib-3rdparties/README.md
+code/lib-3rdparties/opencv/4.5.2-mingw/OpenCV-MinGW-Build-OpenCV-4.5.2-x64/x64/mingw/bin/opencv_videoio_ffmpeg452_64.dll

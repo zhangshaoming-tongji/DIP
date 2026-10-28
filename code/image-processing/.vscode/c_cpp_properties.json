@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "name": "x64-mingw-image-processing",
+            "includePath": [
+                "${workspaceFolder}/include",
+                "${workspaceFolder}/include/2025A",
+                "${workspaceFolder}/../lib-common/include",
+                "${workspaceFolder}/../lib-3rdparties/opencv/4.5.2-mingw/OpenCV-MinGW-Build-OpenCV-4.5.2-x64/include",
+                "${workspaceFolder}/../lib-3rdparties/opencv/4.5.2-mingw/OpenCV-MinGW-Build-OpenCV-4.5.2-x64/include/opencv2"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "compilerPath": "${workspaceFolder}/../lib-3rdparties/mingw-winlibs-16/mingw64/bin/g++.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "windows-gcc-x64"
+        }
+    ],
+    "version": 4
+}
