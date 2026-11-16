@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>第8章 频域应用 · 四例课堂演示</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <div>
+      <p class="kicker">数字图像处理 · 第8章 · 课堂互动</p>
+      <h1>频谱泄漏、相位结构、快速傅里叶变换滤波与小波融合</h1>
+    </div>
+  </header>
+  <p id="banner" class="banner" hidden></p>
+  <nav id="demos" class="demos"></nav>
+  <main>
+    <section class="stage">
+      <figure><figcaption id="cap0"></figcaption><canvas id="c0"></canvas></figure>
+      <figure><figcaption id="cap1"></figcaption><canvas id="c1"></canvas></figure>
+      <figure><figcaption id="cap2"></figcaption><canvas id="c2"></canvas></figure>
+      <figure><figcaption id="cap3"></figcaption><canvas id="c3"></canvas></figure>
+      <figure id="fig4" hidden><figcaption id="cap4"></figcaption><canvas id="c4"></canvas></figure>
+      <figure id="fig5" hidden><figcaption id="cap5"></figcaption><canvas id="c5"></canvas></figure>
+    </section>
+    <aside>
+      <h2 id="demoTitle"></h2>
+      <p id="question" class="question"></p>
+      <div id="controls"></div>
+      <p id="formula" class="formula"></p>
+      <p id="note" class="note"></p>
+      <p id="stats" class="stats"></p>
+    </aside>
+  </main>
+  <script src="fft.js"></script>
+  <script src="algo.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

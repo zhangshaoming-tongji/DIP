@@ -1,6 +1,6 @@
 # DIP
 
-数字图像处理课程资料（2025 秋季）。目前公开第 2 讲到第 5 讲：基础知识、灰度与几何变换、卷积滤波，以及这次内容的作业辅导。后面的课会陆续放出。课件在根目录，课堂演示在 `lab/`，插图在 `canvas/`，上机代码在 `code/`。
+数字图像处理课程资料（2025 秋季）。目前公开第 2 讲到第 5 讲，以及第 8 讲的频域应用。第 6、7 讲和其余内容会陆续放出。课件在根目录，课堂演示在 `lab/`，插图在 `canvas/`，上机代码在 `code/`。
 
 作者：[张绍明](https://celiang.tongji.edu.cn/info/1301/2420.htm)，同济大学。
 
@@ -14,6 +14,7 @@
 | `202509-03` | 基本变换：灰度变换与几何变换 |
 | `202509-04` | 邻域变换：卷积计算与图像滤波 |
 | `202509-05` | 作业辅导 1：基本变换与卷积 |
+| `202509-08` | 频域分析：图像离散傅里叶变换应用 |
 
 ## 课堂演示
 
@@ -24,6 +25,8 @@
 | `lab/ch2-lab-hsi-hsv-demo` | 用狒狒图对比 HSI 与 HSV | `start.bat`，<http://127.0.0.1:8765/> |
 | `lab/ch3-lab` | 灰度变换、直方图、代数运算与几何变换 | 浏览器直接打开 `index.html` |
 | `lab/ch4-lab` | 最大最小、均值、高斯、可分离卷积、双边、联合双边、引导滤波 | `start.bat`，<http://127.0.0.1:8767/> |
+| `lab/ch8-lab` | 作业辅导用的离散傅里叶变换、循环卷积与频域滤波 | `start.bat`，<http://127.0.0.1:8766/> |
+| `lab/ch8-apply-lab` | 第 8 讲四例：频谱泄漏、相位与结构、快速傅里叶变换滤波、小波遥感融合 | `start.bat`，<http://127.0.0.1:8769/> |
 
 第 4 章演示里，引导滤波用课件上的两例：郁金香细节增强，以及硬掩模配毛发引导图的结构迁移。
 
@@ -33,9 +36,11 @@
 
 ## 上机代码
 
-`code/image-processing` 是 MinGW 下的课堂程序，源码在 `src/`，示例入口在 `demos/`。这一版只含灰度变换、几何变换和卷积滤波。OpenCV 4.5.2 在 `code/lib-3rdparties/opencv`。编译器不放进仓库：下载 WinLibs `gcc-16.1.0-mingw-w64msvcrt-14.0.0-r4` 的 Win64 压缩包，解压到 `code/lib-3rdparties/mingw-winlibs-16/`，使 `mingw64/bin/g++.exe` 位于其下。下载地址和解压步骤见 `code/lib-3rdparties/README.md`。`build.bat` 按这个路径找编译器。灰度与卷积用到的公共代码在 `code/lib-common`（`utilities`、`Drawing`）。
+`code/image-processing` 是 MinGW 下的课堂程序，源码在 `src/`，示例入口在 `demos/`。其中包含灰度变换、几何变换、卷积滤波，以及第 8 讲的频域四例。OpenCV 4.5.2 在 `code/lib-3rdparties/opencv`。编译器不放进仓库：下载 WinLibs `gcc-16.1.0-mingw-w64msvcrt-14.0.0-r4` 的 Win64 压缩包，解压到 `code/lib-3rdparties/mingw-winlibs-16/`，使 `mingw64/bin/g++.exe` 位于其下。下载地址和解压步骤见 `code/lib-3rdparties/README.md`。`build.bat` 按这个路径找编译器。灰度与卷积用到的公共代码在 `code/lib-common`（`utilities`、`Drawing`）。
 
 在 `code/image-processing` 下，`build.bat` 编译 `demos/dip_demos.cpp`、`src/basicTrans.cpp`、`src/convolution.cpp`，得到 `bin/dip_demos.exe`。`run_conv.bat` 用 `data/conv_src.bmp` 跑一维、二维平滑。
+
+第 8 讲的四例作业另有入口：`build_freq.bat` 编译 `demos/freq_homework.cpp` 与 `src/freqDomain.cpp`，`run_freq.bat` 运行后把图像和 `report.txt` 写到 `sample_data/out/`。样例图和步骤说明见 `sample_data/SOURCES.md` 与 `README_ch8_lab.md`。四例是频谱泄漏、幅度与相位交换、补零后的快速傅里叶变换滤波，以及哈尔小波遥感融合。旧版 11 题源码保留为 `demos/freq_homework_legacy.cpp`，默认不编译。
 
 ## 开源许可
 
