@@ -1,4 +1,4 @@
-// 第 8 章频域应用实验：随堂演示与四道练习（新版，代替原来的 11 题作业）。
+// 第 8 章频域应用实验：随堂演示与四道练习。
 //
 // 例1 频谱泄漏：分别观察一维离散余弦序列和二维正弦条纹图像，在观察窗口包含整数个周期与非整数个周期时，离散傅里叶变换（DFT）的幅度分布。
 // 例2 相位携带图像结构：对 Lena 与摄影师（Cameraman）两幅图像做离散傅里叶变换，交换它们的幅度谱与相位谱之后再做离散傅里叶逆变换（IDFT），观察重建结果的轮廓。
@@ -6,8 +6,8 @@
 // 例4 基于小波分解与重构的遥感图像融合：对高分辨率全色图像做一层二维哈尔（Haar）小波分解，得到一个低频近似子带与三个高频细节子带；用低分辨率彩色图像替换低频近似子带，再做二维离散小波逆变换（IDWT），得到融合结果。
 //
 // 编译方法：在当前目录运行 build_freq.bat。
-// 运行方法：运行 run_freq.bat，或执行 bin\freq_homework.exe sample_data。
-// 输出位置：结果图像和实验报告保存在 sample_data/out/ 目录中。
+// 运行方法：运行 run_freq.bat，或执行 bin\freq_homework.exe data\ch8。
+// 输出位置：结果图像和实验报告保存在 data/ch8/out/ 目录中。
 
 #define NOMINMAX
 #include <windows.h>
@@ -422,7 +422,7 @@ cv::Mat tile2x2(const cv::Mat &a, const cv::Mat &b, const cv::Mat &c, const cv::
 int main(int argc, char *argv[])
 {
 	SetConsoleOutputCP(65001);
-	const std::string dir = (argc >= 2) ? argv[1] : "sample_data";
+	const std::string dir = (argc >= 2) ? argv[1] : "data\\ch8";
 	const std::string outDir = dir + "\\out";
 	CreateDirectoryA(dir.c_str(), NULL);
 	CreateDirectoryA(outDir.c_str(), NULL);
