@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>第9章 图像增强 · 边缘检测课堂演示</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <div>
+      <p class="kicker">数字图像处理 · 第9章 · 课堂互动</p>
+      <h1>一阶微分、LoG / DoG 过零点与 Canny 边缘检测</h1>
+    </div>
+  </header>
+  <nav id="demos" class="demos"></nav>
+  <main>
+    <section class="stage">
+      <figure><figcaption id="cap0"></figcaption><canvas id="c0"></canvas></figure>
+      <figure><figcaption id="cap1"></figcaption><canvas id="c1"></canvas></figure>
+      <figure><figcaption id="cap2"></figcaption><canvas id="c2"></canvas></figure>
+      <figure><figcaption id="cap3"></figcaption><canvas id="c3"></canvas></figure>
+      <figure id="fig4" hidden><figcaption id="cap4"></figcaption><canvas id="c4"></canvas></figure>
+      <figure id="fig5" hidden><figcaption id="cap5"></figcaption><canvas id="c5"></canvas></figure>
+    </section>
+    <aside>
+      <h2 id="demoTitle"></h2>
+      <p id="question" class="question"></p>
+      <div id="controls"></div>
+      <div id="kernelBox" class="kernel-box" hidden></div>
+      <p id="formula" class="formula"></p>
+      <p id="note" class="note"></p>
+      <p id="stats" class="stats"></p>
+    </aside>
+  </main>
+  <script src="algo.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
